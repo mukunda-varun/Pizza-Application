@@ -1,0 +1,61 @@
+/-------Date : 03-Apr-2021-------/
+	* Code Updated with Blade motor for V2_0 Board
+	* Code Updated for 480MHz for V2_0 Board
+/-------Date : 03-Apr-2021-------/
+
+/-------Date : 04-Apr-2021-------/
+	* Code Updated with minimum quantity error solved, to take default macro value for minimum weight
+	if the value from android is zero.
+/-------Date : 04-Apr-2021-------/
+
+/-------Date : 06-Apr-2021-------/
+	* Updated for M1 & M2 of proximity Macro
+	* Update the homing dutycycle forcefully, if the value is zero. 
+	To avoid stoppage of press during the process
+/-------Date : 06-Apr-2021-------/	
+
+/-------Date : 07-Apr-2021-------/
+	* Updated the Step angle for flour stepper motor to 1.8 for full step
+	* Added initial RPM counter for Ejector, Leadscrew, Water, Oil(Yet to be tested)
+	* In android update status, the data of total flour qty will be sent as 129 if it is 128.
+	* Added condition for dough ball type, which was displaying as baking percent to 100, even during dough ball mode
+/-------Date : 07-Apr-2021-------/
+
+/-------Date : 15-Apr-2021-------/
+	* Updated Code for writing the Firmware Version to Flash memory
+	* Added Calib.c file
+/-------Date : 15-Apr-2021-------/		
+
+/-------Date : 16-Apr-2021-------/
+	* Updated Code ld file for 150Kb flash for program and 4KB for Version for successful update of the version after OTA
+	* Updated the code for loop code test.(Testing to be done)
+	* Changed the Version address to 0x8125800
+/-------Date : 16-Apr-2021-------/	
+
+/-------Date : 17-Apr-2021-------/
+	* Updated Code for flour level for flour dispening
+	* Updated error structure for individual position of kneader & ejector
+	* Added a function called defaultValueAssignmentForMCToRun(void) to assign required values to run the machine, if the  values from android are invalid.
+	* Added a function for module test(for testing).
+	* Changed the direction of Flour motor during Cleaning.
+	* Updated the usage of count for pre-coating clock-anticlockwise toggling
+/-------Date : 17-Apr-2021-------/	
+
+/-------Date : 19-Apr-2021-------/
+	* Added error logic for water dispense with water pulse count from flow sensor
+/-------Date : 19-Apr-2021-------/	
+
+/-------Date : 29-Apr-2021-------/
+	* Added TOF Sensor Library for Flour presence Sensor(To be Tested)
+/-------Date : 29-Apr-2021-------/	
+
+/-------Date : 18-May-2021-------/
+	* Added logic for Only kneading without press & ejector.
+/-------Date : 18-May-2021-------/
+
+/-------Date : 15-June-2021-------/
+	* Modified data for Version Check
+	* Added Macro for Temperature Cut-Off band value TEMPERATURE_CUTOFF_VALUE
+	* Added macro for pizza base & ball mode
+/-------Date : 15-June-2021-------/
+	
