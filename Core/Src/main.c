@@ -1440,6 +1440,8 @@ int main(void)
 
   defaultValueAssignmentForMCToRun();
 
+
+
   /*Set Default Speeds of stepper motor & Thickness Reference Value*/
 
 #if !androidParameter
