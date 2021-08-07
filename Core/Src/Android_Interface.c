@@ -504,7 +504,7 @@ void  Update_Quantity_Sufficiency(void)
 	/*Added to throw an error if total dough possible is less than the quantity given*/
 	if((Total_Flour_qty > 0) && ((Total_dough_possible_flour - MIN_FLOUR_DOUGH_POSSIBLE) ) <  Pizza_setting.quantity)
 	{
-		msg[8] = 1;//0;//Red
+		msg[8] = 0;//0;//Red
 	}
 	else if((Total_Flour_qty > 0) && ((Total_dough_possible_flour - MIN_FLOUR_DOUGH_POSSIBLE)) >=  Pizza_setting.quantity)
 	{
@@ -516,11 +516,11 @@ void  Update_Quantity_Sufficiency(void)
 	}
 	else if((Total_Water_qty > 0) && ((Total_dough_possible_water - MIN_WATER_DOUGH_POSSIBLE)) <  Pizza_setting.quantity)
 	{
-		msg[9] = 1;//0;//Red
+		msg[9] = 0;//0;//Red
 	}
 	if((Total_oil_qty > 0) &&((Total_dough_possible_oil - MIN_OIL_DOUGH_POSSIBLE)) <  Pizza_setting.quantity)
 	{
-		msg[10] = 1;//0;//red
+		msg[10] = 0;//0;//red
 	}
 	else if((Total_oil_qty > 0) &&((Total_dough_possible_oil - MIN_OIL_DOUGH_POSSIBLE)) >=  Pizza_setting.quantity)
 	{

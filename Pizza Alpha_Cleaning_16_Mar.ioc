@@ -954,4 +954,3 @@ PB1.GPIOParameters=GPIO_Label
 PA7.Signal=ADCx_INP7
 PE9.GPIO_PuPd=GPIO_NOPULL
 PF2.GPIO_Label=DC_SSR_OP1
-isbadioc=false

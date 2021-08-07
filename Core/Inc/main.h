@@ -992,7 +992,7 @@ Motor ejectorMotor, leadScrewMotor;
 
 #define		COMPLETE_PROCESS				1				//0->Disable  or 1->Enable
 
-#define 	INTERLOCK_EN					0
+#define 	INTERLOCK_EN					1
 /*******Compiler Commenting*******/
 
 /**Blade Values**/
@@ -1117,6 +1117,8 @@ Motor ejectorMotor, leadScrewMotor;
 #define		PIZZA_BASE_MODE								0
 
 #define		TEMPERATURE_CUTOFF_VALUE					12
+
+#define		SSR_OFF_CUTOFF								5
 /**********Macros Value**********/
 
 /* USER CODE END EM */

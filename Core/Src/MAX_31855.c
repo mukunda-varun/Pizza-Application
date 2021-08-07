@@ -35,23 +35,23 @@ void Temperature_control(uint16_t Top_Pan_Cutoff,uint16_t Bottom_Pan_Cutoff)
 	{
 		kTypeTemperature.bottomPanTemperature = 129;
 	}
-	if((kTypeTemperature.topPanTemperature < Top_Pan_Cutoff))
+	if((kTypeTemperature.topPanTemperature < (Top_Pan_Cutoff - SSR_OFF_CUTOFF)))
 	{
 		HAL_GPIO_WritePin(SSR_TOP_PAN_GPIO_Port, SSR_TOP_PAN_Pin, SET);
 		//TOP PAN SSR_ON
 	}
-	else if((kTypeTemperature.topPanTemperature > Top_Pan_Cutoff))
+	else if((kTypeTemperature.topPanTemperature > (Top_Pan_Cutoff - SSR_OFF_CUTOFF)))
 	{
 		HAL_GPIO_WritePin(SSR_TOP_PAN_GPIO_Port, SSR_TOP_PAN_Pin, RESET);
 		//TOP PAN SSR_OFF
 	}
 
-	if((kTypeTemperature.bottomPanTemperature<Bottom_Pan_Cutoff))
+	if((kTypeTemperature.bottomPanTemperature< (Bottom_Pan_Cutoff - SSR_OFF_CUTOFF)))
 	{
 		HAL_GPIO_WritePin(SSR_BOTTOM_PAN_GPIO_Port, SSR_BOTTOM_PAN_Pin,SET);
 		//BOTTOM PAN SSR_ON
 	}
-	else if((kTypeTemperature.bottomPanTemperature>Top_Pan_Cutoff))
+	else if((kTypeTemperature.bottomPanTemperature>(Bottom_Pan_Cutoff - SSR_OFF_CUTOFF)))
 	{
 		HAL_GPIO_WritePin(SSR_BOTTOM_PAN_GPIO_Port, SSR_BOTTOM_PAN_Pin,RESET);
 		//BOTTOM PAN SSR_OFF

@@ -3695,7 +3695,7 @@ void StartSpeedControl_Process_Task(void *argument)
 		if(flourConnectorDistanceinMM >= 10)
 		{
 			errorCntVal.flourConnectorErrorCnt++;
-			if(errorCntVal.flourConnectorErrorCnt >= 10)
+			if(errorCntVal.flourConnectorErrorCnt >= 2)
 			{
 				processErrorState.flourConnector = 1;
 				pnpProximityValues.flourConnectorPresence = 0;
@@ -3708,7 +3708,7 @@ void StartSpeedControl_Process_Task(void *argument)
 			processErrorState.flourConnector = 0;
 		}
 #endif
-		osDelay(300);
+		osDelay(200);
 	}
   /* USER CODE END StartSpeedControl_Process_Task */
 }
@@ -5568,7 +5568,24 @@ void Cleaning(void *argument)
 			break;
 		case cleaning_abort_process:
 			 HAL_TIM_Base_Stop_IT(&htim14);
+
 			 HAL_TIM_Base_Stop_IT(&htim7);
+			 Oil_Stepper_Motor.rpm_counter=0;
+			 Oil_Stepper_Motor.steps_counter=0;
+			 Oil_Stepper_Motor.total_no_of_steps =0;
+			 HAL_GPIO_WritePin(OIL_DISP_EN_GPIO_Port, OIL_DISP_EN_Pin,RESET);
+			 HAL_GPIO_WritePin(OIL_DISP_PULSE_GPIO_Port, OIL_DISP_PULSE_Pin,RESET);
+			 Water_Stepper_Motor.rpm_counter=0;
+			 Water_Stepper_Motor.steps_counter=0;
+			 Water_Stepper_Motor.total_no_of_steps =0;
+			 HAL_GPIO_WritePin(WATER_DISP_EN_GPIO_Port, WATER_DISP_EN_Pin,RESET);
+			 HAL_GPIO_WritePin(WATER_DISP_PULSE_GPIO_Port, WATER_DISP_PULSE_Pin,RESET);
+			 Flour_Stepper_Motor.rpm_counter=0;
+			 Flour_Stepper_Motor.steps_counter=0;
+			 Flour_Stepper_Motor.total_no_of_steps =0;
+			 HAL_GPIO_WritePin(FLOUR_DISP_EN_GPIO_Port, FLOUR_DISP_EN_Pin,RESET);
+			 HAL_GPIO_WritePin(FLOUR_DISP_PULSE_GPIO_Port, FLOUR_DISP_PULSE_Pin,RESET);
+
 			 HAL_TIM_Base_Stop_IT(&htim15);
 			 Press_DC_Set_PWM(0, CLOCKWISE);
 			 PWM_Channels_Stop();
@@ -7515,7 +7532,7 @@ void Kneading_Flow_Task(void *argument)
 				Toggling_DC_Motor_Stop();
 #if 	!doughReleaseEnable
 				/*If pizza Quantity given is one and completed pizza kneading is 0, move the knead base to bottom*/
-				if((Pizza_setting.quantity == 1)&&(pizza_quantity==0))
+				if((Pizza_setting.quantity == 1)&&(pizza_quantity==0) && (pnpProximityValues.bottomDoorProxLimit == DETECTED))
 				{
 					Toggle_motor_main_state = Toggle_motor_idle;
 					knead_screw_rear_end_or_bottom_end_limit_state = knead_screw_start;
@@ -7549,6 +7566,37 @@ void Kneading_Flow_Task(void *argument)
 			{
 				kneading_process_percent = 85;
 				/*If pizza Quantity given is one and completed pizza kneading is 0, move the knead base to bottom*/
+#if 			INTERLOCK_EN == 1
+				if((Pizza_setting.quantity == 1)&&(pizza_quantity==0) && (pnpProximityValues.bottomDoorProxLimit == DETECTED))
+				{
+					Toggle_motor_main_state = Toggle_motor_idle;
+					leadscrewMotorKneadingDirection = CLOCKWISE;
+					kneadLeadscrewTravel.newMMTravel = kneadLeadscrewTravel.maximumMMTravel - KNEADER_LEAD_SLOW_DISTANCE_ABV_PLATE;
+					Knead_movement_to_xx_mm_state = knead_screw_start;
+					kneadingProcessState = kneading_movement_x_mm_above_base_speed_reduce_wait_to_complete;
+					doughReleaseProcess = doughReleaseIdle;
+				}
+				/*If pizza Quantity given is greater than one and completed pizza kneading is less than actual quantity, move the knead base to bottom*/
+				else if((pizza_quantity==0)&&(Pizza_setting.quantity > 1 &&  pizza_quantity < Pizza_setting.quantity )&& (pnpProximityValues.bottomDoorProxLimit == DETECTED))
+				{
+					Toggle_motor_main_state = Toggle_motor_idle;
+					leadscrewMotorKneadingDirection = CLOCKWISE;
+					kneadLeadscrewTravel.newMMTravel = kneadLeadscrewTravel.maximumMMTravel - KNEADER_LEAD_SLOW_DISTANCE_ABV_PLATE;
+					Knead_movement_to_xx_mm_state = knead_screw_start;
+					kneadingProcessState = kneading_movement_x_mm_above_base_speed_reduce_wait_to_complete;
+					doughReleaseProcess = doughReleaseIdle;
+				}
+				/*If pizza Quantity given is greater than one and completed pizza kneading is less than actual quantity and the base is ejected out of the machine, move the knead base to bottom*/
+				else if(Pizza_setting.quantity > 1 && dough_ejection_complete==1 && pizza_quantity < Pizza_setting.quantity && (pnpProximityValues.bottomDoorProxLimit == DETECTED) )
+				{
+					Toggle_motor_main_state = Toggle_motor_idle;
+					leadscrewMotorKneadingDirection = CLOCKWISE;
+					kneadLeadscrewTravel.newMMTravel = kneadLeadscrewTravel.maximumMMTravel - KNEADER_LEAD_SLOW_DISTANCE_ABV_PLATE;
+					Knead_movement_to_xx_mm_state = knead_screw_start;
+					kneadingProcessState = kneading_movement_x_mm_above_base_speed_reduce_wait_to_complete;
+					doughReleaseProcess = doughReleaseIdle;
+				}
+#elif INTERLOCK_EN == 0
 				if((Pizza_setting.quantity == 1)&&(pizza_quantity==0))
 				{
 					Toggle_motor_main_state = Toggle_motor_idle;
@@ -7556,6 +7604,7 @@ void Kneading_Flow_Task(void *argument)
 					kneadLeadscrewTravel.newMMTravel = kneadLeadscrewTravel.maximumMMTravel - KNEADER_LEAD_SLOW_DISTANCE_ABV_PLATE;
 					Knead_movement_to_xx_mm_state = knead_screw_start;
 					kneadingProcessState = kneading_movement_x_mm_above_base_speed_reduce_wait_to_complete;
+					doughReleaseProcess = doughReleaseIdle;
 				}
 				/*If pizza Quantity given is greater than one and completed pizza kneading is less than actual quantity, move the knead base to bottom*/
 				else if((pizza_quantity==0)&&(Pizza_setting.quantity > 1 &&  pizza_quantity < Pizza_setting.quantity ))
@@ -7565,6 +7614,7 @@ void Kneading_Flow_Task(void *argument)
 					kneadLeadscrewTravel.newMMTravel = kneadLeadscrewTravel.maximumMMTravel - KNEADER_LEAD_SLOW_DISTANCE_ABV_PLATE;
 					Knead_movement_to_xx_mm_state = knead_screw_start;
 					kneadingProcessState = kneading_movement_x_mm_above_base_speed_reduce_wait_to_complete;
+					doughReleaseProcess = doughReleaseIdle;
 				}
 				/*If pizza Quantity given is greater than one and completed pizza kneading is less than actual quantity and the base is ejected out of the machine, move the knead base to bottom*/
 				else if(Pizza_setting.quantity > 1 && dough_ejection_complete==1 && pizza_quantity < Pizza_setting.quantity )
@@ -7574,8 +7624,9 @@ void Kneading_Flow_Task(void *argument)
 					kneadLeadscrewTravel.newMMTravel = kneadLeadscrewTravel.maximumMMTravel - KNEADER_LEAD_SLOW_DISTANCE_ABV_PLATE;
 					Knead_movement_to_xx_mm_state = knead_screw_start;
 					kneadingProcessState = kneading_movement_x_mm_above_base_speed_reduce_wait_to_complete;
+					doughReleaseProcess = doughReleaseIdle;
 				}
-				doughReleaseProcess = doughReleaseIdle;
+#endif
 			}
 			break;
 		case kneading_movement_x_mm_above_base_speed_reduce_wait_to_complete:

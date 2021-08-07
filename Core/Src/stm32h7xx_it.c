@@ -545,7 +545,7 @@ void TIM6_DAC_IRQHandler(void)
 		{
 			if(processErrorState.bottomDoorError == 1)
 			{
-				if(ejecter_home_position_state != ejecter_idle || ejecter_home_position_state != ejecter_completed)
+				if(ejecter_home_position_state != ejecter_idle && ejecter_home_position_state != ejecter_completed)
 				{
 					HAL_TIM_Base_Stop_IT(&htim15);
 					Ejecter_Stepper_Motor.rpm_counter=0;
@@ -555,7 +555,7 @@ void TIM6_DAC_IRQHandler(void)
 					HAL_GPIO_WritePin(EJECTOR_PULSE_GPIO_Port, EJECTOR_PULSE_Pin,RESET);
 					ejecter_home_position_state = ejecter_start;
 				}
-				else if(ejecter_front_end_limit_position_state != ejecter_idle || ejecter_front_end_limit_position_state != ejecter_completed)
+				else if(ejecter_front_end_limit_position_state != ejecter_idle && ejecter_front_end_limit_position_state != ejecter_completed)
 				{
 					HAL_TIM_Base_Stop_IT(&htim15);
 					Ejecter_Stepper_Motor.rpm_counter=0;
