@@ -44,7 +44,6 @@ extern uint32_t water_pulse_count;
 extern char indata[64];
 extern uint8_t process_abort;
 extern uint8_t process_start;
-extern uint8_t re_len;
 extern uint32_t data_len;
 extern int8_t status;
 extern uint8_t data_id;
@@ -240,7 +239,7 @@ void StartAndroidProcessingTask(void *argument)
 					 break;
 				case SERVICE_PRESS_MEASUREMENT:
 					 memcpy(&pressCalibServiceMenuStruct,&received_data[2],sizeof(pressCalibServiceMenuStruct));
-	//					 serviceCalibrationState = flourCalibrationStart;s
+	//					 serviceCalibrationState = flourCalibrationStart;
 					 time_measure=1;
 					 ref_msg  = SERVICE_PRESS_MEASUREMENT;
 					 Send_ADR_Response(ref_msg,1);

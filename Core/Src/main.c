@@ -285,7 +285,6 @@ uint8_t complete_process_done = 2;
 char indata[64];
 uint8_t process_abort=0;
 uint8_t process_start=0;
-uint8_t re_len;
 uint32_t data_len;
 int8_t status;
 uint8_t data_id;
@@ -297,7 +296,6 @@ uint8_t local_action;
 /**Kneading Variables**/
 volatile uint32_t bladeMotorSpeedValueFromStructure = 0;
 volatile uint32_t mixingTimeValuefromStructure = 0;
-float pwmValue = 0.0f;
 volatile uint32_t waitCnt = 0, bladeRunCnt = 0, previousBladePWM = 0, currentBladePWM = 0;
 uint8_t bladeDutyCycle = 0;
 /**Kneading Variables**/
@@ -436,15 +434,10 @@ volatile uint8_t kneading_state_android = 0, press_state_android = 0, kneading_p
 
 
 /*Debug Variables for Testing*/
-uint16_t delay_counter;
-uint8_t retVal = 0;
-//uint32_t flashdestination = PRODUCTION_REPORT_ADDRESS;
-uint8_t report_data[100];
-uint8_t _counter;
+volatile uint8_t id ;
+uint32_t led_toggle ;
 uint16_t SSR_counter=0;
-uint32_t led_toggle = 0;
 volatile uint32_t usb_cnt = 0;
-volatile uint8_t id = 0;
 
 uint32_t time_measure;
 uint32_t time_measure_debug_cnt;
@@ -725,13 +718,13 @@ void parameterValueAssignment(void)
 	{
 		commonMCSetting.Idle_top_pan_temperature = 110;
 	}
-	if(commonMCSetting.Idle_bottom_pan_temperatuer > 0)
+	if(commonMCSetting.Idle_bottom_pan_temperature > 0)
 	{
-		commonMCSetting.Idle_bottom_pan_temperatuer = commonMCSetting.Idle_bottom_pan_temperatuer;
+		commonMCSetting.Idle_bottom_pan_temperature = commonMCSetting.Idle_bottom_pan_temperature;
 	}
 	if(commonMCSetting.Idle_top_pan_temperature <= 0)
 	{
-		commonMCSetting.Idle_bottom_pan_temperatuer = 120;
+		commonMCSetting.Idle_bottom_pan_temperature = 120;
 	}
 	//Added on 24-03-21
 
@@ -1278,6 +1271,8 @@ void defaultValueAssignmentForMCToRun(void)
 	  {
 		  HW_Setting1.No_Of_pulser_per_ml = 2;
 	  }
+	  commonMCSetting.Idle_top_pan_temperature = 110;
+	  commonMCSetting.Idle_bottom_pan_temperature = 120;
 }
 void moduleWiseTesting(void)
 {
@@ -1476,9 +1471,9 @@ int main(void)
 
 	/*Start Heating of Pan initially when device is turned on*/
 	if(Pressing_Baking.Top_Pan_Cut_off_Temp == 0)
-		Pressing_Baking.Top_Pan_Cut_off_Temp = 100;//120;
+		Pressing_Baking.Top_Pan_Cut_off_Temp = commonMCSetting.Idle_top_pan_temperature;//120;
 	if(Pressing_Baking.Bottom_Pan_Cut_off_Temp == 0)
-		Pressing_Baking.Bottom_Pan_Cut_off_Temp= 110;//135;
+		Pressing_Baking.Bottom_Pan_Cut_off_Temp= commonMCSetting.Idle_bottom_pan_temperature;//135;
 	/*Start Heating of Pan initially when device is turned on*/
 
 	//Start the temperature control Timer
@@ -3245,13 +3240,16 @@ void StartMainProcess(void *argument)
 			/*If kneading is completed increment the pizza quantity once the dough base reaches the bottom*/
 			if(kneadingProcessState == kneading_complete &&  knead_screw_rear_end_or_bottom_end_limit_state == knead_screw_completed)
 			{
-				pizza_quantity++;
+			/*	pizza_quantity++;
 				kneadingProcessState =kneading_idle;
-				Knead_movement_to_xx_mm_state = knead_screw_idle;
+				Knead_movement_to_xx_mm_state = knead_screw_idle;*/
 				Blade_DC_Motor_Stop();
 				press_state_android = 6;
 				if(Pizza_setting.Dough_shape == PIZZA_BALL_MODE)			//Pizza Ball mode
 				{
+					pizza_quantity++;
+					kneadingProcessState =kneading_idle;
+					Knead_movement_to_xx_mm_state = knead_screw_idle;
 #if COMPLETE_PROCESS == 1
 					Ejecter_Stepper_Motor.rpm = Dough_Pizza_Eject.Ejector_Forward_speed_3;
 					ejecter_front_end_limit_position_state = ejecter_start;
@@ -3271,6 +3269,19 @@ void StartMainProcess(void *argument)
 					Main_process_state = Main_Eject_Wait;
 #endif
 				}
+#if				INTERLOCK_EN == 1
+				else if(Pizza_setting.Dough_shape == PIZZA_BASE_MODE && pnpProximityValues.bottomDoorProxLimit == DETECTED)			//Pizza Base Mode
+				{
+					pizza_quantity++;
+					kneadingProcessState =kneading_idle;
+					Knead_movement_to_xx_mm_state = knead_screw_idle;
+					knead_screw_rear_end_or_bottom_end_limit_state=knead_screw_idle;
+					Ejecter_Stepper_Motor.rpm = Dough_Pizza_Eject.Ejector_forward_speed1;	//Speed to start of pan
+					ejectorLeadscrewTravel.newMMTravel = Dough_Pizza_Eject.Ejector_Forward_Distance_1;		//Distance to start of Pan
+					ejecter_movment_to_xx_mm_state = ejecter_start;
+					Main_process_state = Main_Eject_doughball_to_start_of_pan;
+				}
+#elif 			INTERLOCK_EN == 0
 				else if(Pizza_setting.Dough_shape == PIZZA_BASE_MODE)			//Pizza Base Mode
 				{
 					knead_screw_rear_end_or_bottom_end_limit_state=knead_screw_idle;
@@ -3279,6 +3290,7 @@ void StartMainProcess(void *argument)
 					ejecter_movment_to_xx_mm_state = ejecter_start;
 					Main_process_state = Main_Eject_doughball_to_start_of_pan;
 				}
+#endif
 
 			}
 			break;
@@ -5048,7 +5060,6 @@ void Adc_task(void *argument)
 		switch(Read_ADC2_Channel_state)
 		{
 		case  ADC2_IDLE:
-
 			break;
 		case ADC2_INIT:
 			LPS_struct.LPSRawADCValue=Adc_channel_reading_for_multiple_inputs(hadc2,ADC2_TOTAL_INPUTCHANNELS);
@@ -6502,11 +6513,19 @@ void Kneading_Flow_Task(void *argument)
 				kneadLeadscrewTravel.previousMMTravel=0;
 				kneadingProcessState=kneading_start_process;
 			}
+#if			INTERLOCK_EN == 1
+			else if(pnpProximityValues.bottomDoorProxLimit == DETECTED)
+			{
+				knead_screw_homing_or_top_end_limit_state=knead_screw_start;
+				kneadingProcessState=kneading_top_proximity_check;
+			}
+#elif		INTERLOCK_EN == 0
 			else
 			{
 				knead_screw_homing_or_top_end_limit_state=knead_screw_start;
 				kneadingProcessState=kneading_top_proximity_check;
 			}
+#endif
 			break;
 		case kneading_top_proximity_check:
 			//Check for Top proximity state for completion

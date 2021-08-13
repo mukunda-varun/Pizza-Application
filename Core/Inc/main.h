@@ -83,7 +83,7 @@ uint16_t Water_priming_time;//P404
 uint16_t Flour_priming_time;////P405
 uint16_t Kneader_Base_Cleaning_Position;//P406
 uint16_t Idle_top_pan_temperature;////P407
-uint16_t Idle_bottom_pan_temperatuer;//P408
+uint16_t Idle_bottom_pan_temperature;//P408
 uint16_t Idle_time;//P409
 uint16_t Gap_between_blade_and_dough_base;//P410
 uint16_t extra1;//P451
