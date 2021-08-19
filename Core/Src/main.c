@@ -1477,7 +1477,7 @@ int main(void)
 	/*Start Heating of Pan initially when device is turned on*/
 
 	//Start the temperature control Timer
-	HAL_TIM_Base_Start_IT(&htim8);
+//	HAL_TIM_Base_Start_IT(&htim8);
   /* USER CODE END 2 */
 
   /* Init scheduler */
