@@ -3227,9 +3227,15 @@ void StartMainProcess(void *argument)
 				Flour_Stepper_Motor.direction = CLOCKWISE;
 				parameterValueAssignment();
 #endif
-				kneadingProcessState = kneading_top_proximity_check_init;
-				kneading_process_percent = 0;
-				Main_process_state = Main_knead;
+
+#if 		FLOUR_PRESENCE_SENSOR
+				if(pnpProximityValues.flourConnectorPresence == 1)
+#endif
+				{
+					kneadingProcessState = kneading_top_proximity_check_init;
+					kneading_process_percent = 0;
+					Main_process_state = Main_knead;
+				}
 			}
 #elif COMPLETE_PROCESS == 0
 			kneadingProcessState = kneading_top_proximity_check_init;
