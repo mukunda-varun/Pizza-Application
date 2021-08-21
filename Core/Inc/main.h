@@ -1048,9 +1048,9 @@ Motor ejectorMotor, leadScrewMotor;
 #define		LPS_CALIBRATE_MIN_MM						(float)0.0
 #define		LPS_CALIBRATE_MIN_ADC						360
 #define		PRESS_DUTYCYCLE_CLEANING					40.0
-#define		PRESS_DEFAULT_THICKNESS						3.0
+#define		PRESS_DEFAULT_THICKNESS						6.0
 #define		PRESS_STOP_OFFSET							0.3
-#define		PIZZA_BASE_THICKNESS_CUTOFF_MM				(float)MAX_VAL_MM - 3.0 // - 2.5 for M2		//+0.5 for M1
+#define		PIZZA_BASE_THICKNESS_CUTOFF_MM				(float)(MAX_VAL_MM - 3.0) // - 2.5 for M2		//+0.5 for M1
 /**Press Values**/
 
 
