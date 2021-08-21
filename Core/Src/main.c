@@ -5671,7 +5671,7 @@ void Service_Menu(void *argument)
 				calibrationOilRotPerGmFromAndroid = ((float)calibServiceMenuStruct.calibDispenseRotPerGm / (float)100);
 //				calibrationOilRotPerGmFromAndroid = ((STEPS_PER_ROTATION_HALF_STEP * 100) / (HW_Setting1.Oil_Pump_Flow_Rate));
 				Oil_Stepper_Motor.total_no_of_steps = ((STEPS_PER_ROTATION_HALF_STEP / (float)calibrationOilRotPerGmFromAndroid) * ((float)calibServiceMenuStruct.calibDispenseQty ));
-				Oil_Stepper_Motor.total_no_of_steps = 400;
+//				Oil_Stepper_Motor.total_no_of_steps = 400;
 				Oil_stepper_motor_state = Oil_stepper_motor_init;
 				serviceCalibrationState = oilCalibrateWaitToComplete;
 				break;
